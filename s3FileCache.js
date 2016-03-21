@@ -23,33 +23,37 @@ var client = s3.createClient({
 
 module.exports = s3FileCache = {};
 
-s3FileCache.getDir = function(localBaseDir, requestDir, bucket) {
+s3FileCache.getDir = function(localBaseDir, requestDir, bucket, cb) {
 
   // If I can access the dir, don't need to sync it from s3
   var returnDir = path.join(localBaseDir,requestDir);
   fs.open(returnDir, 'r', function (err) {
-    if (err) {
-      console.log('Cache miss, download: '+returnDir);
-      // It isn't accessible
-      var params = {
-        localDir: path.join(localBaseDir,requestDir),
-        s3Params: {
-          Bucket: bucket,
-          Prefix: requestDir,
-          // other options supported by putObject, except Body and ContentLength.
-          // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-        },
-      };
-      var downloader = client.downloadDir(params);
-      downloader.on('error', function(err) {
-				console.error("unable to download:", err.stack);
-			});
-			downloader.on('progress', function() {
-				console.log("progress", downloader.progressAmount, downloader.progressTotal);
-			});
-			downloader.on('end', function() {
-				console.log("done downloading");
-			});
+    if (!err) {
+      return cb(null, returnDir);
     }
+
+    console.log('Cache miss, download: '+returnDir);
+    // It isn't accessible
+    var params = {
+      localDir: path.join(localBaseDir,requestDir),
+      s3Params: {
+        Bucket: bucket,
+        Prefix: requestDir,
+        // other options supported by putObject, except Body and ContentLength.
+        // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
+      },
+    };
+    var downloader = client.downloadDir(params);
+    downloader.on('error', function(err) {
+			console.error("unable to download:", err.stack);
+      return cb(err);
+		});
+		downloader.on('progress', function() {
+			console.log("progress", downloader.progressAmount, downloader.progressTotal);
+		});
+		downloader.on('end', function() {
+			console.log("done downloading");
+      return cb(null, returnDir);
+		});
   });
 };
