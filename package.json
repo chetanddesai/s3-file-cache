@@ -1,0 +1,34 @@
+{
+  "name": "s3-file-cache",
+  "version": "1.0.0",
+  "description": "A simple file cache that uses s3 as the origin.",
+  "main": "s3FileCache.js",
+  "scripts": {
+    "test": "gulp test",
+    "postversion": "git push --follow-tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chetanddesai/s3-file-cache.git"
+  },
+  "keywords": [
+    "s3",
+    "file",
+    "cache"
+  ],
+  "author": "Chetan Desai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chetanddesai/s3-file-cache/issues"
+  },
+  "homepage": "https://github.com/chetanddesai/s3-file-cache#readme",
+  "devDependencies": {
+    "chai": "~3.5.0",
+    "gulp": "~3.9.1",
+    "gulp-istanbul": "~0.10.3",
+    "gulp-mocha": "~2.2.0"
+  },
+  "dependencies": {
+    "s3": "~4.4.0"
+  }
+}
